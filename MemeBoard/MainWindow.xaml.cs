@@ -24,7 +24,6 @@ namespace MemeBoard
     public partial class MainWindow : Window
     {
         private Storyboard sb => (Storyboard)this.Resources["imageRotationStoryboard"];
-        private bool isRotating = false;
         private Memes memes;
 
         public MainWindow()

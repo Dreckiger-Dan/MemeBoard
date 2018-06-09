@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" 
         WindowStyle="None"
+        Icon="res\lul.ico"
         Background="Transparent"
         AllowsTransparency="True"
         WindowState="Maximized"
@@ -21,7 +22,6 @@
     <Image Name="image" 
            Width="900" 
            Height="900" 
-           Source="C:\Users\stream\Desktop\memes\LUL.png" 
            RenderTransformOrigin=".5,.5">
         <Image.RenderTransform>
             <RotateTransform Angle="0" />

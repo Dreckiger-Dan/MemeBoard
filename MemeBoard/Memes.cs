@@ -13,9 +13,11 @@ namespace MemeBoard
     public class Memes : List<Meme>
     {
         private const string memeSettings = "memes.xml";
-        private Meme currentMeme;
 
+        private Meme currentMeme { get; set; }
         private XmlSerializer serializer = new XmlSerializer(typeof(Memes));
+
+        public event EventHandler MemesLoaded;
 
         [XmlIgnore]
         public MainWindow window { get; set; }
@@ -45,24 +47,42 @@ namespace MemeBoard
 
         public void LoadMemes()
         {
+            LoadMemes(true);
+        }
+
+        public void LoadMemes(bool registerHotkeys)
+        {
             if (!File.Exists(memeSettings))
                 CreateSettingsFile();
 
             var file = File.OpenRead(memeSettings);
             Clear();
-            Memes fileMemes = (Memes)serializer.Deserialize(file);
-            AddRange(fileMemes);
 
-            foreach (Meme meme in this)
+            try
             {
-                new mrousavy.HotKey(meme.modifierKeys, meme.key, window,
-                    _ => ChangeMeme(meme));
+                Memes fileMemes = (Memes)serializer.Deserialize(file);
+                AddRange(fileMemes);
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"memes.xml contains errors. Please delete it or correct the errors.\n{ex.Message}");
+            }
+
+            if (registerHotkeys)
+            {
+                foreach (Meme meme in this)
+                {
+                    new mrousavy.HotKey(meme.modifierKeys, meme.key, window,
+                        _ => ChangeMeme(meme));
+                }
+            }
+
+            MemesLoaded.Invoke(this, new EventArgs());
         }
 
         public void SaveMemes()
         {
-            var file = File.OpenWrite(memeSettings);
+            var file = File.Open(memeSettings, FileMode.Create);
 
             serializer.Serialize(file, this);
             file.Close();

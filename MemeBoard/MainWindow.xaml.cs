@@ -25,12 +25,14 @@ namespace MemeBoard
     {
         private Storyboard sb => (Storyboard)this.Resources["imageRotationStoryboard"];
         private bool isRotating = false;
-        private Memes currentMeme = Memes.MonkaS;
+        private Memes memes;
 
         public MainWindow()
         {
             InitializeComponent();
             this.Topmost = true;
+            memes = new Memes();
+            memes.window = this;
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -40,92 +42,21 @@ namespace MemeBoard
 
         private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (this.isRotating)
+            if (memes.CurrentMeme.isRotating)
             {
                 sb.Stop();
-                this.isRotating = false;
+                memes.CurrentMeme.isRotating = false;
             }
             else
             {
                 sb.Begin();
-                this.isRotating = true;
+                memes.CurrentMeme.isRotating = true;
             }
-        }
-
-        private void ChangeMeme(Memes meme)
-        {
-            if (this.WindowState == WindowState.Maximized && this.currentMeme == meme)
-            {
-                this.WindowState = WindowState.Minimized;
-                return;
-            }
-
-            sb.Stop();
-
-            switch (meme)
-            {
-                case Memes.LUL:
-                    ImageBehavior.SetAnimatedSource(image, null);
-                    this.image.Source = new BitmapImage(new Uri(@"C:\Users\stream\Desktop\memes\LUL.png"));
-                    break;
-                case Memes.MonkaS:
-                    this.image.Source = new BitmapImage(new Uri(@"C:\Users\stream\Desktop\memes\monkaS.png"));
-                    break;
-                case Memes.OMEGALUL:
-                    this.image.Source = new BitmapImage(new Uri(@"C:\Users\stream\Desktop\memes\omegalul.png"));
-                    break;
-                case Memes.Confused:
-                    this.image.Source = new BitmapImage(new Uri(@"C:\Users\stream\Desktop\memes\confused.png"));
-                    break;
-                case Memes.LUL3D:
-                    var img = new BitmapImage();
-                    img.BeginInit();
-                    img.UriSource = new Uri(@"C:\Users\stream\Desktop\memes\lul3d.gif");
-                    img.EndInit();
-                    ImageBehavior.SetAnimatedSource(image, img);
-                    break;
-                default:
-                    break;
-            }
-
-            this.currentMeme = meme;
-
-            this.WindowState = WindowState.Maximized;
-
-            this.Activate();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            new HotKey(ModifierKeys.Control, Key.L, this,
-                _ => this.ChangeMeme(Memes.LUL));
-
-            new HotKey(ModifierKeys.Control, Key.M, this,
-                _ => this.ChangeMeme(Memes.MonkaS));
-
-            new HotKey(ModifierKeys.Control, Key.O, this,
-                _ => this.ChangeMeme(Memes.OMEGALUL));
-
-            new HotKey(ModifierKeys.Control, Key.D3, this,
-                _ => this.ChangeMeme(Memes.LUL3D));
-
-            new HotKey(ModifierKeys.Control, Key.W, this,
-                _ => this.ChangeMeme(Memes.Confused));
+            memes.LoadMemes();
         }
-    }
-
-    public enum Memes
-    {
-        LUL,
-        LUL3D,
-        MonkaS,
-        Confused,
-        PogChamp,
-        POGGERS,
-        OMEGALUL,
-        ResidentSleeper,
-        gachiBASS,
-        WutFace,
-        cmonBruh
     }
 }
